@@ -1,0 +1,33 @@
+               Stratigraphic Dataset reducetest
+
+  Name
++
+            above:
+            contemporary with:
+            equal to:
+            below: 1
+1
+            above: +
+            contemporary with:
+            equal to:
+            below: 2, 3, 4
+2
+            above: 1
+            contemporary with:
+            equal to:
+            below: 4
+3
+            above: 1
+            contemporary with:
+            equal to:
+            below: 4
+4
+            above: 1, 2, 3
+            contemporary with:
+            equal to:
+            below: -
+-
+            above: 4
+            contemporary with:
+            equal to:
+            below:

@@ -1,0 +1,38 @@
+               Stratigraphic Dataset cycletest
+
+  Name
++
+            above:
+            contemporary with:
+            equal to:
+            below: 1
+1
+            above: +
+            contemporary with:
+            equal to:
+            below: 2
+2
+            above: 1
+            contemporary with:
+            equal to:
+            below: 3
+3
+            above: 2
+            contemporary with:
+            equal to:
+            below: 1, 4
+4
+            above: 3
+            contemporary with:
+            equal to:
+            below: 5
+5
+            above: 3
+            contemporary with:
+            equal to:
+            below: 1, 3, 6
+6
+            above: 5
+            contemporary with:
+            equal to:
+            below: 6

@@ -35,6 +35,7 @@ parser.add_argument("-r", "--reduce", help="Apply a transitive reduction to the 
 parser.add_argument("-s", "--style", help="Include basic style formatting in output", action='store_true')
 parser.add_argument("-p", "--orphans", help="Include orphan units in output (format dependent)", action='store_true')
 parser.add_argument("-wn", "--width", help="Width of node if --style is set", type=float, default=50.0)
+parser.add_argument("-a", "--sameas", help="Include Same-As relationships in output", action='store_true')
 parser.add_argument("-hn", "--height", help="Height of node if --style is set", type=float, default=25.0)
 parser.add_argument('infile', help="Source data file", nargs='?', type=argparse.FileType('r'), default=sys.stdin)
 parser.add_argument('outfile', help="Destination data file", nargs='?', type=argparse.FileType('w'), default=sys.stdout)
@@ -58,4 +59,4 @@ elif args.outfile.name != '<stdout>':
     outformat = outformat.strip('.')
 outformat = outformat.lower()
 
-process.process(args.infile, informat, args.outfile, outformat, args.name, args.site, args.reduce, args.orphans, args.style, args.width, args.height)
+process.process(args.infile, informat, args.outfile, outformat, args.name, args.site, args.reduce, args.orphans, args.style, args.sameas, args.width, args.height)

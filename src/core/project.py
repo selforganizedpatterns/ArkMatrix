@@ -71,6 +71,6 @@ class Project():
             if key not in self.matrix:
                 self._units.pop(key)
 
-    def writeFile(self, fileFormat, style, width, height):
+    def writeFile(self, fileFormat, style, sameas, width, height):
         formatter = Format.createFormat(fileFormat)
-        formatter.write(self, style, width, height)
+        formatter.write(self, style, sameas, width, height)

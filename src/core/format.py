@@ -55,7 +55,7 @@ class Format():
     def read(self, infile, project):
         pass
 
-    def write(self, project, style, width, height):
+    def write(self, project, style, sameas, width, height):
         pass
 
 
@@ -147,16 +147,23 @@ class FormatCsv(Format):
         inEdges = set()
         for record in reader:
             try:
-                above = Unit(project.siteCode, record[0])
-                below = Unit(project.siteCode, record[1])
-                project.addUnit(above)
-                project.addUnit(below)
-                project.addRelationship(above, Matrix.Above, below)
+                reln = Matrix.Above
+                fromUnit = Unit(project.siteCode, record[0])
+                toUnit = Unit(project.siteCode, record[1])
+                if len(record) < 3 or record[2] == 'above':
+                    reln = Matrix.Above
+                elif record[2] == 'below':
+                    reln = Matrix.Below
+                elif record[2] == 'sameas':
+                    reln = Matrix.SameAs
+                project.addUnit(fromUnit)
+                project.addUnit(toUnit)
+                project.addRelationship(fromUnit, reln, toUnit)
             except:
                 if record:
                     print 'Error reading row: ' + str(record)
 
-    def write(self, project, style=False, width=None, height=None):
+    def write(self, project, style=False, sameas=False, width=None, height=None):
         for unit in project.units():
             for child in project.matrix.successors(unit):
                 print doublequote(unit.unitId())  + ',' + doublequote(project.unit(child).unitId())
@@ -164,7 +171,7 @@ class FormatCsv(Format):
 
 class FormatGv(Format):
 
-    def write(self, project, style=False, width=None, height=None):
+    def write(self, project, style=False, sameas=False, width=None, height=None):
         print 'digraph ' + project.dataset.replace(' ', '_') + ' {'
         if style:
             project.matrix.weightForDegree()
@@ -186,7 +193,7 @@ class FormatGv(Format):
 
 class FormatGml(Format):
 
-    def write(self, project, style=False, width=None, height=None):
+    def write(self, project, style=False, sameas=False, width=None, height=None):
         print 'graph ['
         print '    directed 1'
 
@@ -220,7 +227,7 @@ class FormatGml(Format):
 
 class FormatGraphML(Format):
 
-    def write(self, project, style=False, width=None, height=None):
+    def write(self, project, style=False, sameas=False, width=None, height=None):
         print '<?xml version="1.0" encoding="UTF-8"?>'
 
         if style:
@@ -282,7 +289,7 @@ class FormatGraphML(Format):
 
 class FormatGxl(Format):
 
-    def write(self, project, style=False, width=None, height=None):
+    def write(self, project, style=False, sameas=False, width=None, height=None):
         print '<?xml version="1.0" encoding="UTF-8"?>'
         print '<!DOCTYPE gxl SYSTEM "http://www.gupro.de/GXL/gxl-1.0.dtd">'
 
@@ -303,7 +310,7 @@ class FormatGxl(Format):
 
 class FormatTgf(Format):
 
-    def write(self, project, style=False, width=None, height=None):
+    def write(self, project, style=False, sameas=False, width=None, height=None):
         for unit in project.units():
             print str(unit.key())  + ' ' + str(unit.unitId())
         print '#'

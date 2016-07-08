@@ -109,11 +109,17 @@ class Matrix():
             self._strat.add_edge(toUnit, fromUnit)
             return True
         elif reln == Matrix.SameAs:
-            self._contemp.remove_edge(fromUnit, toUnit)
+            try:
+                self._contemp.remove_edge(fromUnit, toUnit)
+            except:
+                pass
             self._same.add_edge(fromUnit, toUnit)
             return True
         elif reln == Matrix.ContemporaryWith:
-            self._same.remove_edge(fromUnit, toUnit)
+            try:
+                self._same.remove_edge(fromUnit, toUnit)
+            except:
+                pass
             self._contemp.add_edge(fromUnit, toUnit)
             return True
         return False

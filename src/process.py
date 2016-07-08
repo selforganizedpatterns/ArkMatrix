@@ -25,7 +25,7 @@ import sys
 
 from src.core.project import Project
 
-def process(infile, informat, outfile, outformat, dataset='', site='', reduceMatrix=False, orphans=False, style=False, width=None, height=None):
+def process(infile, informat, outfile, outformat, dataset='', site='', reduceMatrix=False, orphans=False, style=False, sameas=False, width=None, height=None):
     project = Project(dataset, site)
     project.readFile(infile, informat)
 
@@ -48,5 +48,5 @@ def process(infile, informat, outfile, outformat, dataset='', site='', reduceMat
     if outfile and outformat and outformat != 'none':
         old_stdout = sys.stdout
         sys.stdout = outfile
-        project.writeFile(outformat, style, width, height)
+        project.writeFile(outformat, style, sameas, width, height)
         sys.stdout = old_stdout

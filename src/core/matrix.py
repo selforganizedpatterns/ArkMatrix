@@ -77,7 +77,8 @@ class Matrix():
         info = info + 'Same As Relationships: ' + str(self._same.number_of_edges()) + '\n'
         info = info + 'Contemporary Relationships: ' + str(self._contemp.number_of_edges()) + '\n'
         info = info + 'Is Valid: ' + str(self.isValid()) + '\n'
-        info = info + 'Longest Path: ' + str(nx.dag_longest_path_length(self._strat)) + '\n'
+        if self.isValid():
+            info = info + 'Longest Path: ' + str(nx.dag_longest_path_length(self._strat)) + '\n'
         return info
 
     def isValid(self):

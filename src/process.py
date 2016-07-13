@@ -37,9 +37,17 @@ def process(infile, informat, outfile, outformat, dataset='', site='', reduceMat
         for cycle in project.matrix.cycles():
             sys.stdout.write('Cycle: ' + str(cycle) + '\n')
     elif reduceMatrix:
-        project.matrix.reduce()
-        sys.stdout.write('Reduced Matrix\n')
+        edges = project.matrix.reduce()
+        sys.stdout.write('Reduced Matrix:\n')
+        sys.stdout.write('Removed Relationships: ' + str(len(edges)) + '\n')
+        for edge in edges:
+            sys.stdout.write('    ' + str(edge[0]) + ' above ' + str(edge[1]) + '\n')
         sys.stdout.write(project.info())
+    else:
+        edges = project.matrix.redundant()
+        sys.stdout.write('Redundant Relationships: ' + str(len(edges)) + '\n')
+        for edge in edges:
+            sys.stdout.write('    ' + str(edge[0]) + ' above ' + str(edge[1]) + '\n')
 
     if not orphans:
         project.removeOrphans()

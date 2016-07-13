@@ -249,11 +249,12 @@ class Matrix():
         """Returns a list of any cycles in the matrix."""
         return nx.simple_cycles(self._strat)
 
-    def reduce(self):
+    def reduce(self, remove=True):
         """Reduces a valid matrix by removing redundant edges. This transforms the matrix in place."""
+        edges = []
         # Can only uniquely reduce the matrix if it is a DAG, i.e. no cycles or self-cycles
         if not self.isValid():
-            return
+            return edges
         # Transitive reduction algorithm found on StackOverflow, algorithm originally from GraphViz tred
         # http://stackoverflow.com/questions/17078696/im-trying-to-perform-the-transitive-reduction-of-directed-graph-in-python
         for root in self._strat.nodes_iter():
@@ -263,7 +264,14 @@ class Matrix():
                     # For the grandchild and all its decendents, remove any direct links back to the original unit
                     for toUnit in nx.dfs_preorder_nodes(self._strat, gen2):
                         if self._strat.has_edge(root, toUnit):
-                            self._strat.remove_edge(root, toUnit)
+                            edges.append((root, toUnit))
+                            if remove:
+                                self._strat.remove_edge(root, toUnit)
+        return edges
+
+    def redundant(self):
+        """Returns a list of any redundant edges without removing them."""
+        return self.reduce(False)
 
     def weight(self, fromUnit, toUnit):
         return self._strat[_key(fromUnit)][_key(toUnit)]['weight']

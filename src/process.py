@@ -36,7 +36,6 @@ def process(infile, informat, outfile, outformat, dataset='', site='', reduceMat
         sys.stdout.write('Invalid Matrix\n')
         for cycle in project.matrix.cycles():
             sys.stdout.write('Cycle: ' + str(cycle) + '\n')
-        return
     elif reduceMatrix:
         project.matrix.reduce()
         sys.stdout.write('Reduced Matrix\n')

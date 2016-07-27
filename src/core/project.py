@@ -31,7 +31,8 @@ class Project():
     siteCode = ''
     matrix = Matrix()
     _units = {}
-    _groups = set()
+    _groups = {}
+    _subgroups = {}
 
     def __init__(self, dataset='', siteCode=''):
         self.dataset = dataset
@@ -40,12 +41,20 @@ class Project():
     def info(self):
         info = '\nDataset: ' + self.dataset + '\n'
         info = info + 'Site Code: ' + self.siteCode + '\n'
-        info = info + 'Number of Units: ' + str(len(self._units)) + '\n\n'
+        info = info + 'Number of Units: ' + str(len(self._units)) + '\n'
+        info = info + 'Number of Groups: ' + str(len(self._groups)) + '\n'
+        info = info + 'Number of Subgroups: ' + str(len(self._subgroups)) + '\n\n'
         info = info + self.matrix.info() + '\n\n'
         return info
 
     def unit(self, key):
-        return self._units[key]
+        if str(key) in self._units:
+            return self._units[key]
+        else:
+            key = self.makeKey(key)
+            if key in self._units:
+                return self._units[key]
+        return Unit()
 
     def units(self):
         return sorted(self._units.values())
@@ -57,20 +66,40 @@ class Project():
     def addUnit(self, unit):
         self._units[unit.key()] = unit
 
-    def addGroup(self, unitId):
-        self._groups.add(unitId)
-
     def addRelationship(self, fromUnit, reln, toUnit):
         self.matrix.addRelationship(fromUnit, reln, toUnit)
 
+    def addGrouping(self, groupId, subgroupId):
+        groupKey =self.makeKey(groupId);
+        subgroupKey =self.makeKey(subgroupId);
+        if groupKey in self._groups:
+            self._groups[groupKey].add(subgroupKey)
+        else:
+            self._groups[groupKey] = set([subgroupKey])
+
+    def addSubgrouping(self, subgroupId, unitId):
+        if subgroupId in self._subgroups:
+            self._subgroups[subgroupId].add(unitId)
+        else:
+            self._subgroups[subgroupId] = set([unitId])
+
     def hasUnit(self, unit):
-        return unit in self._units
+        if isinstance(unit, Unit):
+            return unit in self._units.values()
+        return unit in self._units or self.makeKey(unit) in self._units
 
     def removeOrphans(self):
-        for key in self._units:
+        for key in self._units.keys():
             if key not in self.matrix:
                 self._units.pop(key)
 
     def writeFile(self, fileFormat, style, sameas, width, height):
         formatter = Format.createFormat(fileFormat)
         formatter.write(self, style, sameas, width, height)
+
+    def makeKey(self, unitId):
+        if self.siteCode:
+            return self.siteCode + '_' + str(unitId)
+        else:
+            return str(unitId)
+

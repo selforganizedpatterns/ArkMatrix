@@ -53,10 +53,12 @@ new edges have been added.
 
 class Matrix():
 
+    # Matrix.Relationship enum
     Above = 0
     Below = 1
     SameAs = 2
     ContemporaryWith = 3
+    Relationship = ['above', 'below', 'sameas', 'contemporary']
 
     _strat = None # DiGraph()
     _same = None # Graph()

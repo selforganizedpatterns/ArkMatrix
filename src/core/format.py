@@ -118,8 +118,8 @@ class FormatLst(Format):
                 project.matrix.addRelationships(unit.key(), Matrix.Above, below)
                 project.matrix.addRelationships(unit.key(), Matrix.SameAs, equal)
                 project.matrix.addRelationships(unit.key(), Matrix.ContemporaryWith, contemporary)
-            elif unit == 'group':
-                project.addGroup(unit)
+                if groupId:
+                    project.addSubgrouping(groupId, unitId)
 
     def _lstNameToUnit(self, name):
         components = name.split('::')
@@ -143,25 +143,44 @@ class FormatCsv(Format):
 
     def read(self, infile, project):
         reader = csv.reader(infile)
-        inNodes = set()
-        inEdges = set()
         for record in reader:
-            try:
-                reln = Matrix.Above
-                fromUnit = Unit(project.siteCode, record[0])
-                toUnit = Unit(project.siteCode, record[1])
-                if len(record) < 3 or record[2] == 'above':
-                    reln = Matrix.Above
-                elif record[2] == 'below':
-                    reln = Matrix.Below
-                elif record[2] == 'sameas':
-                    reln = Matrix.SameAs
-                project.addUnit(fromUnit)
-                project.addUnit(toUnit)
-                project.addRelationship(fromUnit, reln, toUnit)
-            except:
-                if record:
-                    print 'Error reading row: ' + str(record)
+            #try:
+                source = str(record[0])
+                target = str(record[1])
+                if len(record) >= 3:
+                    tag = str(record[2])
+                else:
+                    tag = 'above'
+                if tag == 'site':
+                    project.siteCode = source
+                elif tag == 'dataset':
+                    project.dataset = source
+                elif tag == 'status':
+                    if target in Unit.Status:
+                        self._addUnit(project, source)
+                        project.unit(source).setStatus(Unit.Status.index(target))
+                elif tag == 'class':
+                    if target in Unit.Class:
+                        self._addUnit(project, source)
+                        project.unit(source).setClass(Unit.Class.index(target))
+                elif tag == 'group':
+                    project.addGrouping(target, source)
+                elif tag == 'subgroup':
+                    self._addUnit(project, source)
+                    project.unit(source).setSubgroup(target)
+                    project.addSubgrouping(target, source)
+                elif tag in Matrix.Relationship:
+                    self._addUnit(project, source)
+                    self._addUnit(project, target)
+                    project.addRelationship(source, Matrix.Relationship.index(tag), target)
+            #except:
+            #    if record:
+            #        print 'Error reading row: ' + str(record)
+
+    def _addUnit(self, project, unitId):
+        if not project.hasUnit(unitId):
+            unit = Unit(project.siteCode, unitId)
+            project.addUnit(unit)
 
     def write(self, project, style=False, sameas=False, width=None, height=None):
         for unit in project.units():

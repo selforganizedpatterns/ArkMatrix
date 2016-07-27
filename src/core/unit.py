@@ -25,27 +25,29 @@ import itertools
 
 class Unit():
 
-    # UnitStatus
+    # Unit.Status enum
     Unassigned = 0
     Assigned = 1
     Void = 2
+    Status = ['unassigned', 'assigned', 'void'];
 
-    # UnitType
+    # Unit.Class enum
     Unknown = 0
     Deposit = 1
     Fill = 2
     Cut = 3
     Masonry = 4
     Skeleton = 5
+    Class = ['unknown', 'deposit', 'fill', 'cut', 'masonry', 'skeleton'];
 
     _counter = itertools.count()
     _nid = 0
     _key = ''
     _siteCode = ''
     _id = ''
-    _group = ''
-    _status = Unassigned # Unit.UnitStatus
-    _type = Unknown # Unit.UnitType
+    _subgroup = ''
+    _status = Unassigned # Unit.Status
+    _class = Unknown # Unit.Type
 
     def __init__(self, siteCode, unitId, groupId='', status=Unassigned, unitType=Unknown):
         self._nid = Unit._counter.next()
@@ -56,7 +58,10 @@ class Unit():
         self._siteCode = siteCode
         self._id = unitId
         self._group = groupId
-        self._type = unitType
+        self._class = unitType
+
+    def __str__(self):
+        return self._key
 
     def __hash__(self):
         return hash(self._key)
@@ -78,8 +83,20 @@ class Unit():
     def unitId(self):
         return self._id
 
+    def setStatus(self, status):
+        self._status = status
+
     def status(self):
         return self._status
 
-    def unitType(self):
-        return self._type
+    def setClass(self, unitClass):
+        self._class = unitClass
+
+    def unitClass(self):
+        return self._class
+
+    def setSubgroup(self, subgroupId):
+        self._subgroup = subgroupId
+
+    def subgroup(self):
+        return self._subgroup

@@ -93,6 +93,10 @@ class Matrix():
         self._same.clear()
         self._contemp.clear()
 
+    def count(self):
+        """Clears the matrix"""
+        return self._strat.number_of_edges() +  self._same.number_of_edges() + self._contemp.number_of_edges()
+
     def addRelationship(self, fromUnit, reln, toUnit):
         """
         Add a relationship between two stratigraphic units.
@@ -206,8 +210,10 @@ class Matrix():
             return self._contemp.has_edge(fromUnit, toUnit)
         return False
 
-    def relationships(self, unit, reln):
+    def relationships(self, unit=None, reln=None):
         """Returns a list of all units with a relationship of a certain type to a unit."""
+        if unit is None and reln is None:
+            return self._strat.edges()
         unit = _key(unit)
         if reln == Matrix.Above:
             return self._strat.predecessors(unit)

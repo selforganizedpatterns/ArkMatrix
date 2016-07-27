@@ -25,29 +25,38 @@ import sys
 
 from src.core.project import Project
 
-def process(infile, informat, outfile, outformat, dataset='', site='', reduceMatrix=False, orphans=False, style=False, sameas=False, width=None, height=None):
+def process(infile, informat, outfile, outformat, dataset='', site='', reduceMatrix=False, subgroupMatrix=False, orphans=False, style=False, sameas=False, width=None, height=None):
     project = Project(dataset, site)
     project.readFile(infile, informat)
 
-    sys.stdout.write('Original Matrix\n')
+    sys.stdout.write('\nOriginal Matrix\n')
     sys.stdout.write(project.info())
 
     if not project.matrix.isValid():
         sys.stdout.write('Invalid Matrix\n')
         for cycle in project.matrix.cycles():
             sys.stdout.write('Cycle: ' + str(cycle) + '\n')
-    elif reduceMatrix:
-        edges = project.matrix.reduce()
-        sys.stdout.write('Reduced Matrix:\n')
-        sys.stdout.write('Removed Relationships: ' + str(len(edges)) + '\n')
-        for edge in edges:
-            sys.stdout.write('    ' + str(edge[0]) + ' above ' + str(edge[1]) + '\n')
-        sys.stdout.write(project.info())
     else:
-        edges = project.matrix.redundant()
-        sys.stdout.write('Redundant Relationships: ' + str(len(edges)) + '\n')
-        for edge in edges:
-            sys.stdout.write('    ' + str(edge[0]) + ' above ' + str(edge[1]) + '\n')
+        if reduceMatrix:
+            edges = project.matrix.reduce()
+            sys.stdout.write('Reduced Matrix:\n')
+            sys.stdout.write('Removed Relationships: ' + str(len(edges)) + '\n')
+            for edge in edges:
+                sys.stdout.write('    ' + str(edge[0]) + ' above ' + str(edge[1]) + '\n')
+            sys.stdout.write(project.info())
+        else:
+            edges = project.matrix.redundant()
+            sys.stdout.write('Redundant Relationships: ' + str(len(edges)) + '\n')
+            for edge in edges:
+                sys.stdout.write('    ' + str(edge[0]) + ' above ' + str(edge[1]) + '\n')
+            sys.stdout.write('\n')
+        if subgroupMatrix:
+            project.subgroup()
+            if project.subgroupMatrix.count() > 0:
+                sys.stdout.write('Subgroup Matrix:\n')
+                sys.stdout.write(project.subgroupMatrix.info())
+            else:
+                sys.stdout.write('No Subgroup Matrix generated\n\n')
 
     if not orphans:
         project.removeOrphans()
@@ -57,3 +66,5 @@ def process(infile, informat, outfile, outformat, dataset='', site='', reduceMat
         sys.stdout = outfile
         project.writeFile(outformat, style, sameas, width, height)
         sys.stdout = old_stdout
+
+    sys.stdout.write('\n')

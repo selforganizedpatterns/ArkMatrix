@@ -32,6 +32,7 @@ parser.add_argument("-o", "--output", help="Choose output format, optional, defa
 parser.add_argument("-n", "--name", help="Name for Matrix", default='')
 parser.add_argument("-t", "--site", help="Site Code for Matrix", default='')
 parser.add_argument("-r", "--reduce", help="Apply a transitive reduction to the input graph", action='store_true')
+parser.add_argument("-b", "--subgroup", help="Generate a subgroup matrix", action='store_true')
 parser.add_argument("-s", "--style", help="Include basic style formatting in output", action='store_true')
 parser.add_argument("-p", "--orphans", help="Include orphan units in output (format dependent)", action='store_true')
 parser.add_argument("-wn", "--width", help="Width of node if --style is set", type=float, default=50.0)
@@ -59,4 +60,4 @@ elif args.outfile.name != '<stdout>':
     outformat = outformat.strip('.')
 outformat = outformat.lower()
 
-process.process(args.infile, informat, args.outfile, outformat, args.name, args.site, args.reduce, args.orphans, args.style, args.sameas, args.width, args.height)
+process.process(args.infile, informat, args.outfile, outformat, args.name, args.site, args.reduce, args.subgroup, args.orphans, args.style, args.sameas, args.width, args.height)

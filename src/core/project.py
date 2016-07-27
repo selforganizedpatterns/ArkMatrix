@@ -30,6 +30,7 @@ class Project():
     dataset = ''
     siteCode = ''
     matrix = Matrix()
+    subgroupMatrix = Matrix()
     _units = {}
     _groups = {}
     _subgroups = {}
@@ -44,7 +45,7 @@ class Project():
         info = info + 'Number of Units: ' + str(len(self._units)) + '\n'
         info = info + 'Number of Groups: ' + str(len(self._groups)) + '\n'
         info = info + 'Number of Subgroups: ' + str(len(self._subgroups)) + '\n\n'
-        info = info + self.matrix.info() + '\n\n'
+        info = info + self.matrix.info() + '\n'
         return info
 
     def unit(self, key):
@@ -103,3 +104,13 @@ class Project():
         else:
             return str(unitId)
 
+    def subgroup(self):
+        self.subgroupMatrix.clear()
+        if len(self._subgroups) == 0:
+            return
+        for reln in self.matrix.relationships():
+            sg1 = self.unit(reln[0]).subgroup()
+            sg2 = self.unit(reln[1]).subgroup()
+            if sg1 and sg2 and sg1 != sg2:
+                self.subgroupMatrix.addRelationship(sg1, Matrix.Above, sg2)
+        self.subgroupMatrix.reduce()

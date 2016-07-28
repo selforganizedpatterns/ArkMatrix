@@ -94,9 +94,9 @@ class Project():
             if key not in self.matrix:
                 self._units.pop(key)
 
-    def writeFile(self, fileFormat, style, sameas, width, height):
+    def writeFile(self, fileFormat, options):
         formatter = Format.createFormat(fileFormat)
-        formatter.write(self, style, sameas, width, height)
+        formatter.write(self, options)
 
     def makeKey(self, unitId):
         if self.siteCode:

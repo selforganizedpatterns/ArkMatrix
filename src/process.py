@@ -25,9 +25,9 @@ import sys
 
 from src.core.project import Project
 
-def process(infile, informat, outfile, outformat, dataset='', site='', reduceMatrix=False, subgroupMatrix=False, orphans=False, style=False, sameas=False, width=None, height=None):
-    project = Project(dataset, site)
-    project.readFile(infile, informat)
+def process(infile, outfile, options):
+    project = Project(options['name'], options['site'])
+    project.readFile(infile, options['input'])
 
     sys.stdout.write('\nOriginal Matrix\n')
     sys.stdout.write(project.info())
@@ -37,7 +37,7 @@ def process(infile, informat, outfile, outformat, dataset='', site='', reduceMat
         for cycle in project.matrix.cycles():
             sys.stdout.write('Cycle: ' + str(cycle) + '\n')
     else:
-        if reduceMatrix:
+        if options['reduce']:
             edges = project.matrix.reduce()
             sys.stdout.write('Reduced Matrix:\n')
             sys.stdout.write('Removed Relationships: ' + str(len(edges)) + '\n')
@@ -50,7 +50,7 @@ def process(infile, informat, outfile, outformat, dataset='', site='', reduceMat
             for edge in edges:
                 sys.stdout.write('    ' + str(edge[0]) + ' above ' + str(edge[1]) + '\n')
             sys.stdout.write('\n')
-        if subgroupMatrix:
+        if options['subgroup']:
             project.subgroup()
             if project.subgroupMatrix.count() > 0:
                 sys.stdout.write('Subgroup Matrix:\n')
@@ -58,13 +58,13 @@ def process(infile, informat, outfile, outformat, dataset='', site='', reduceMat
             else:
                 sys.stdout.write('No Subgroup Matrix generated\n\n')
 
-    if not orphans:
+    if not options['orphans']:
         project.removeOrphans()
 
-    if outfile and outformat and outformat != 'none':
+    if outfile and options['output'] and options['output'] != 'none':
         old_stdout = sys.stdout
         sys.stdout = outfile
-        project.writeFile(outformat, style, sameas, width, height)
+        project.writeFile(options['output'], options)
         sys.stdout = old_stdout
 
     sys.stdout.write('\n')

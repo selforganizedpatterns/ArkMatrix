@@ -55,7 +55,7 @@ class Format():
     def read(self, infile, project):
         pass
 
-    def write(self, project, style, sameas, width, height):
+    def write(self, project, options):
         pass
 
 
@@ -182,7 +182,7 @@ class FormatCsv(Format):
             unit = Unit(project.siteCode, unitId)
             project.addUnit(unit)
 
-    def write(self, project, style=False, sameas=False, width=None, height=None):
+    def write(self, project, options):
         for unit in project.units():
             for child in project.matrix.successors(unit):
                 print doublequote(unit.unitId())  + ',' + doublequote(project.unit(child).unitId())
@@ -190,20 +190,20 @@ class FormatCsv(Format):
 
 class FormatGv(Format):
 
-    def write(self, project, style=False, sameas=False, width=None, height=None):
+    def write(self, project, options):
         print 'digraph ' + project.dataset.replace(' ', '_') + ' {'
-        if style:
+        if options['style']:
             project.matrix.weightForDegree()
             print '    splines=polyline' # Should be ortho but ports support not implemented
             print '    concentrate=true'
             print '    ranksep="1.0 equally"'
             print '    nodesep="2.0 equally"'
             print '    node [shape=box]'
-            print '    edge [arrowhead=none headport=n tailport=s width=' + str(width) + ' height=' + str(height) + ']'
+            print '    edge [arrowhead=none headport=n tailport=s width=' + str(options['width']) + ' height=' + str(options['height']) + ']'
 
         for edge in project.matrix._strat.edges_iter(data='weight', default=1):
             out = '    ' + doublequote(project.unit(edge[0]).unitId()) + ' -> ' + doublequote(project.unit(edge[1]).unitId())
-            if style:
+            if options['style']:
                 out += ' [weight=' + str(edge[2]) + ']'
             print out + ';'
 
@@ -212,7 +212,7 @@ class FormatGv(Format):
 
 class FormatGml(Format):
 
-    def write(self, project, style=False, sameas=False, width=None, height=None):
+    def write(self, project, options):
         print 'graph ['
         print '    directed 1'
 
@@ -220,11 +220,11 @@ class FormatGml(Format):
             print '    node ['
             print '        id ' + str(unit._nid)
             print '        label ' + doublequote(unit.unitId())
-            if style:
+            if options['style']:
                 print '        graphics ['
                 print '            type "rectangle"'
-                print '            w ' + str(width)
-                print '            h ' + str(height)
+                print '            w ' + str(options['width'])
+                print '            h ' + str(options['height'])
                 print '        ]'
             print '    ]'
 
@@ -234,7 +234,7 @@ class FormatGml(Format):
             print '        id ' + str(eid)
             print '        source ' + str(project.unit(edge[0])._nid)
             print '        target ' + str(project.unit(edge[1])._nid)
-            if style:
+            if options['style']:
                 print '        graphics ['
                 print '            arrow "none"'
                 print '        ]'
@@ -246,10 +246,10 @@ class FormatGml(Format):
 
 class FormatGraphML(Format):
 
-    def write(self, project, style=False, sameas=False, width=None, height=None):
+    def write(self, project, options):
         print '<?xml version="1.0" encoding="UTF-8"?>'
 
-        if style:
+        if options['style']:
             #yEd support
             print '<graphml xmlns="http://graphml.graphdrawing.org/xmlns"'
             print '         xmlns:java="http://www.yworks.com/xml/yfiles-common/1.0/java"'
@@ -269,14 +269,14 @@ class FormatGraphML(Format):
         print '    <graph id="' + project.dataset + '" edgedefault="directed">'
 
         for unit in project.units():
-            if style:
+            if options['style']:
                 print '        <node id=' + doublequote(unit.unitId()) + '>'
                 print '            <port name="North"/>'
                 print '            <port name="South"/>'
                 #yEd support
                 print '            <data key="d5">'
                 print '                <y:ShapeNode>'
-                print '                    <y:Geometry height="' + str(height) + '" width="' + str(width) + '"/>'
+                print '                    <y:Geometry height="' + str(options['height']) + '" width="' + str(options['width']) + '"/>'
                 print '                    <y:NodeLabel alignment="center" autoSizePolicy="content" visible="true">' + str(unit.unitId()) + '</y:NodeLabel>'
                 print '                    <y:Shape type="rectangle"/>'
                 print '                </y:ShapeNode>'
@@ -288,12 +288,12 @@ class FormatGraphML(Format):
         eid = 0
         for edge in project.matrix._strat.edges_iter():
             out = '        <edge id=' + doublequote(eid) + ' source=' + doublequote(project.unit(edge[0]).unitId()) + ' target=' + doublequote(project.unit(edge[1]).unitId())
-            if style:
+            if options['style']:
                 out += ' sourceport="South" targetport="North"/>'
             else:
                 out += '"/>'
             print out
-            if style:
+            if options['style']:
                 print '            <data key="d9">'
                 print '                <y:PolyLineEdge>'
                 print '                    <y:Arrows source="none" target="none"/>'
@@ -308,7 +308,7 @@ class FormatGraphML(Format):
 
 class FormatGxl(Format):
 
-    def write(self, project, style=False, sameas=False, width=None, height=None):
+    def write(self, project, options):
         print '<?xml version="1.0" encoding="UTF-8"?>'
         print '<!DOCTYPE gxl SYSTEM "http://www.gupro.de/GXL/gxl-1.0.dtd">'
 
@@ -329,7 +329,7 @@ class FormatGxl(Format):
 
 class FormatTgf(Format):
 
-    def write(self, project, style=False, sameas=False, width=None, height=None):
+    def write(self, project, options):
         for unit in project.units():
             print str(unit.key())  + ' ' + str(unit.unitId())
         print '#'

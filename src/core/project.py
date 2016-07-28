@@ -71,14 +71,20 @@ class Project():
         self.matrix.addRelationship(fromUnit, reln, toUnit)
 
     def addGrouping(self, groupId, subgroupId):
-        groupKey =self.makeKey(groupId);
-        subgroupKey =self.makeKey(subgroupId);
-        if groupKey in self._groups:
-            self._groups[groupKey].add(subgroupKey)
+        groupId = self._makeId(groupId)
+        subgroupId = self._makeId(subgroupId)
+        if not groupId or not subgroupId:
+            return
+        if groupId in self._groups:
+            self._groups[groupId].add(subgroupId)
         else:
-            self._groups[groupKey] = set([subgroupKey])
+            self._groups[groupId] = set([subgroupId])
 
     def addSubgrouping(self, subgroupId, unitId):
+        subgroupId = self._makeId(subgroupId)
+        unitId = self._makeId(unitId)
+        if not subgroupId or not unitId:
+            return
         if subgroupId in self._subgroups:
             self._subgroups[subgroupId].add(unitId)
         else:
@@ -98,11 +104,19 @@ class Project():
         formatter = Format.createFormat(fileFormat)
         formatter.write(self, options)
 
+    def writeSubgroupFile(self, fileFormat, options):
+        formatter = Format.createFormat(fileFormat)
+        formatter.writeSubgroup(self, options)
+
     def makeKey(self, unitId):
-        if self.siteCode:
-            return self.siteCode + '_' + str(unitId)
+        unitId = self._makeId(unitId)
+        if self.siteCode and unitId:
+            return self.siteCode + '_' + unitId
         else:
-            return str(unitId)
+            return unitId
+
+    def _makeId(self, unitId):
+        return str(unitId)
 
     def subgroup(self):
         self.subgroupMatrix.clear()

@@ -25,7 +25,7 @@ import sys
 
 from src.core.project import Project
 
-def process(infile, outfile, options):
+def process(infile, outfile, subgroupfile, options):
     project = Project(options['name'], options['site'])
     project.readFile(infile, options['input'])
 
@@ -61,10 +61,13 @@ def process(infile, outfile, options):
     if not options['orphans']:
         project.removeOrphans()
 
-    if outfile and options['output'] and options['output'] != 'none':
+    if outfile and options['output'] != 'none':
         old_stdout = sys.stdout
         sys.stdout = outfile
         project.writeFile(options['output'], options)
+        if options['subgroup'] and subgroupfile and options['subgroupoutput'] != 'none':
+            sys.stdout = subgroupfile
+            project.writeSubgroupFile(options['subgroupoutput'], options)
         sys.stdout = old_stdout
 
     sys.stdout.write('\n')

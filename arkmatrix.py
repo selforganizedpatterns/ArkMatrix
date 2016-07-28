@@ -40,6 +40,7 @@ parser.add_argument("--width", help="Width of node if --style is set", type=floa
 parser.add_argument("--height", help="Height of node if --style is set", type=float, default=25.0)
 parser.add_argument('infile', help="Source data file", nargs='?', type=argparse.FileType('r'), default=sys.stdin)
 parser.add_argument('outfile', help="Destination data file", nargs='?', type=argparse.FileType('w'), default=sys.stdout)
+parser.add_argument('subgroupfile', help="Destination subgroup data file if --subgroup set", nargs='?', type=argparse.FileType('w'), default=sys.stdout)
 
 args = parser.parse_args()
 options = vars(args)
@@ -59,6 +60,16 @@ if not options['output']:
     options['output'] = 'none'
 options['output'] = options['output'].lower()
 
+if args.subgroup:
+    if options['output']:
+        options['subgroupoutput'] = options['output']
+    elif args.subgroupfile.name != '<stdout>':
+        basename, suffix = os.path.splitext(args.subgroupfile.name)
+        options['subgroupoutput'] = suffix.strip('.')
+if 'subgroupoutput' not in options:
+    options['subgroupoutput'] = 'none'
+options['subgroupoutput'] = options['subgroupoutput'].lower()
+
 if 'outname' not in options:
     if args.name and args.site:
         options['outname'] = args.site + '_' + args.name
@@ -69,4 +80,4 @@ if 'outname' not in options:
     else:
         options['outname'] = 'matrix'
 
-process.process(args.infile, args.outfile, options)
+process.process(args.infile, args.outfile, args.subgroupfile, options)

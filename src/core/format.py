@@ -58,6 +58,8 @@ class Format():
     def write(self, project, options):
         pass
 
+    def writeSubgroup(self, project, options):
+        pass
 
 class FormatLst(Format):
 
@@ -213,36 +215,62 @@ class FormatGv(Format):
 class FormatGml(Format):
 
     def write(self, project, options):
-        print 'graph ['
-        print '    directed 1'
+
+        self._writeHeader()
 
         for unit in project.units():
-            print '    node ['
-            print '        id ' + str(unit._nid)
-            print '        label ' + doublequote(unit.unitId())
-            if options['style']:
-                print '        graphics ['
-                print '            type "rectangle"'
-                print '            w ' + str(options['width'])
-                print '            h ' + str(options['height'])
-                print '        ]'
-            print '    ]'
+            self._writeNode(unit._nid, unit.unitId(), options['style'], options['width'], options['height'])
 
         eid = 0
         for edge in project.matrix._strat.edges_iter():
-            print '    edge ['
-            print '        id ' + str(eid)
-            print '        source ' + str(project.unit(edge[0])._nid)
-            print '        target ' + str(project.unit(edge[1])._nid)
-            if options['style']:
-                print '        graphics ['
-                print '            arrow "none"'
-                print '        ]'
-            print '    ]'
+            self._writeEdge(eid, project.unit(edge[0])._nid, project.unit(edge[1])._nid, options['style'])
             eid += 1
 
+        self._writeFooter()
+
+    def writeSubgroup(self, project, options):
+
+        self._writeHeader()
+
+        for subgroupId in project._subgroups.keys():
+            self._writeNode(subgroupId, subgroupId, options['style'], options['width'], options['height'])
+
+        eid = 0
+        for edge in project.subgroupMatrix._strat.edges_iter():
+            self._writeEdge(eid, edge[0], edge[1], options['style'])
+            eid += 1
+
+        self._writeFooter()
+
+    def _writeHeader(self):
+        print 'graph ['
+        print '    directed 1'
+
+    def _writeFooter(self):
         print ']'
 
+    def _writeNode(self, nodeId, unitId, style, width, height):
+        print '    node ['
+        print '        id ' + str(nodeId)
+        print '        label ' + doublequote(unitId)
+        if style:
+            print '        graphics ['
+            print '            type "rectangle"'
+            print '            w ' + str(width)
+            print '            h ' + str(height)
+            print '        ]'
+        print '    ]'
+
+    def _writeEdge(self, edgeId, fromNodeId, toNodeId, style):
+        print '    edge ['
+        print '        id ' + str(edgeId)
+        print '        source ' + str(fromNodeId)
+        print '        target ' + str(toNodeId)
+        if style:
+            print '        graphics ['
+            print '            arrow "none"'
+            print '        ]'
+        print '    ]'
 
 class FormatGraphML(Format):
 

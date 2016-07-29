@@ -34,13 +34,14 @@ parser.add_argument("-s", "--style", help="Include basic style formatting in out
 parser.add_argument("--site", help="Site Code for Matrix", default='')
 parser.add_argument("--name", help="Name for Matrix", default='')
 parser.add_argument("--sameas", help="Include Same-As relationships in output", action='store_true')
-parser.add_argument("--subgroup", help="Generate a subgroup matrix", action='store_true')
+parser.add_argument("--group", help="Generate subgroup and group Matrices", action='store_true')
 parser.add_argument("--orphans", help="Include orphan units in output (format dependent)", action='store_true')
 parser.add_argument("--width", help="Width of node if --style is set", type=float, default=50.0)
 parser.add_argument("--height", help="Height of node if --style is set", type=float, default=25.0)
 parser.add_argument('infile', help="Source data file", nargs='?', type=argparse.FileType('r'), default=sys.stdin)
 parser.add_argument('outfile', help="Destination data file", nargs='?', type=argparse.FileType('w'), default=sys.stdout)
-parser.add_argument('subgroupfile', help="Destination subgroup data file if --subgroup set", nargs='?', type=argparse.FileType('w'), default=sys.stdout)
+parser.add_argument('subgroupfile', help="Destination subgroup data file if --group set", nargs='?', type=argparse.FileType('w'), default=sys.stdout)
+parser.add_argument('groupfile', help="Destination group data file if --group set", nargs='?', type=argparse.FileType('w'), default=sys.stdout)
 
 args = parser.parse_args()
 options = vars(args)
@@ -60,15 +61,23 @@ if not options['output']:
     options['output'] = 'none'
 options['output'] = options['output'].lower()
 
-if args.subgroup:
+if args.group:
     if options['output']:
         options['subgroupoutput'] = options['output']
-    elif args.subgroupfile.name != '<stdout>':
-        basename, suffix = os.path.splitext(args.subgroupfile.name)
-        options['subgroupoutput'] = suffix.strip('.')
+        options['groupoutput'] = options['output']
+    else:
+        if args.subgroupfile.name != '<stdout>':
+            basename, suffix = os.path.splitext(args.subgroupfile.name)
+            options['subgroupoutput'] = suffix.strip('.')
+        if args.groupfile.name != '<stdout>':
+            basename, suffix = os.path.splitext(args.groupfile.name)
+            options['groupoutput'] = suffix.strip('.')
 if 'subgroupoutput' not in options:
     options['subgroupoutput'] = 'none'
+if 'groupoutput' not in options:
+    options['groupoutput'] = 'none'
 options['subgroupoutput'] = options['subgroupoutput'].lower()
+options['groupoutput'] = options['groupoutput'].lower()
 
 if 'outname' not in options:
     if args.name and args.site:
@@ -80,4 +89,4 @@ if 'outname' not in options:
     else:
         options['outname'] = 'matrix'
 
-process.process(args.infile, args.outfile, args.subgroupfile, options)
+process.process(args.infile, args.outfile, args.subgroupfile, args.groupfile, options)

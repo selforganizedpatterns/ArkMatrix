@@ -31,9 +31,11 @@ class Project():
     siteCode = ''
     matrix = Matrix()
     subgroupMatrix = Matrix()
+    groupMatrix = Matrix()
     _units = {}
     _groups = {}
     _subgroups = {}
+    _subgroupGroup = {}
 
     def __init__(self, dataset='', siteCode=''):
         self.dataset = dataset
@@ -42,6 +44,8 @@ class Project():
     def info(self):
         info = '  Dataset: ' + self.dataset + '\n'
         info = info + '  Site Code: ' + self.siteCode + '\n'
+        info = info + '  Number of Groups: ' + str(len(self._groups)) + '\n'
+        info = info + '  Number of Subgroups: ' + str(len(self._subgroups)) + '\n'
         info = info + '  Number of Units: ' + str(len(self._units)) + '\n'
         orphans = self.orphans()
         info = info + '  Number of Orphan Units: ' + str(len(orphans)) + '\n'
@@ -49,11 +53,15 @@ class Project():
             info = info + '    ' + str(orphans) + '\n'
         if len(self._subgroups) > 0:
             missing = self.missingSubgroup()
-            info = info + '  Number of Units Missing Subgroup: ' + str(len(orphans)) + '\n'
+            info = info + '  Number of Units Missing Subgroup: ' + str(len(missing)) + '\n'
             if missing:
                 info = info + '    ' + str(missing) + '\n'
-        info = info + '  Number of Groups: ' + str(len(self._groups)) + '\n'
-        info = info + '  Number of Subgroups: ' + str(len(self._subgroups)) + '\n\n'
+        if len(self._groups) > 0:
+            missing = self.missingGroup()
+            info = info + '  Number of Subgroups Missing Group: ' + str(len(missing)) + '\n'
+            if missing:
+                info = info + '    ' + str(missing) + '\n'
+        info += '\n'
         info = info + self.matrix.info()
         return info
 
@@ -84,6 +92,7 @@ class Project():
         subgroupId = self._makeId(subgroupId)
         if not groupId or not subgroupId:
             return
+        self._subgroupGroup[subgroupId] = groupId
         if groupId in self._groups:
             self._groups[groupId].add(subgroupId)
         else:
@@ -111,6 +120,15 @@ class Project():
                 units.append(unit.unitId())
         return units
 
+    def missingGroup(self):
+        subgroups = []
+        for group in self._groups.values():
+            subgroups += group
+        for subgroup in self._subgroups.keys():
+            if subgroup in subgroups:
+                subgroups.remove(subgroup)
+        return subgroups
+
     def orphans(self):
         units = []
         for unit in self._units.values():
@@ -134,6 +152,10 @@ class Project():
         formatter = Format.createFormat(fileFormat)
         formatter.writeSubgroup(self, options)
 
+    def writeGroupFile(self, fileFormat, options):
+        formatter = Format.createFormat(fileFormat)
+        formatter.writeGroup(self, options)
+
     def makeKey(self, unitId):
         unitId = self._makeId(unitId)
         if self.siteCode and unitId:
@@ -154,3 +176,14 @@ class Project():
             if sg1 and sg2 and sg1 != sg2:
                 self.subgroupMatrix.addRelationship(sg1, Matrix.Above, sg2)
         self.subgroupMatrix.reduce()
+
+    def group(self):
+        self.groupMatrix.clear()
+        if len(self._groups) == 0 or len(self._subgroups) == 0 or self.subgroupMatrix.count() == 0:
+            return
+        for reln in self.subgroupMatrix.relationships():
+            g1 = self._subgroupGroup[reln[0]]
+            g2 = self._subgroupGroup[reln[1]]
+            if g1 and g2 and g1 != g2:
+                self.groupMatrix.addRelationship(g1, Matrix.Above, g2)
+        self.groupMatrix.reduce()

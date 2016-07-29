@@ -61,6 +61,9 @@ class Format():
     def writeSubgroup(self, project, options):
         pass
 
+    def writeGroup(self, project, options):
+        pass
+
 class FormatLst(Format):
 
     # Temp default site code
@@ -237,6 +240,20 @@ class FormatGml(Format):
 
         eid = 0
         for edge in project.subgroupMatrix._strat.edges_iter():
+            self._writeEdge(eid, self._hash(edge[0]), self._hash(edge[1]), options['style'])
+            eid += 1
+
+        self._writeFooter()
+
+    def writeGroup(self, project, options):
+
+        self._writeHeader()
+
+        for groupId in project._groups.keys():
+            self._writeNode(self._hash(groupId), groupId, options['style'], options['width'], options['height'])
+
+        eid = 0
+        for edge in project.groupMatrix._strat.edges_iter():
             self._writeEdge(eid, self._hash(edge[0]), self._hash(edge[1]), options['style'])
             eid += 1
 

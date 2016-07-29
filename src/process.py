@@ -25,7 +25,7 @@ import sys
 
 from src.core.project import Project
 
-def process(infile, outfile, subgroupfile, options):
+def process(infile, outfile, subgroupfile, groupfile, options):
     project = Project(options['name'], options['site'])
     project.readFile(infile, options['input'])
 
@@ -53,11 +53,17 @@ def process(infile, outfile, subgroupfile, options):
             sys.stdout.write('  Redundant Relationships: ' + str(len(edges)) + '\n')
             for edge in edges:
                 sys.stdout.write('    ' + str(edge[0]) + ' above ' + str(edge[1]) + '\n')
-        if options['subgroup']:
+        if options['group']:
             sys.stdout.write('\n\nSubgroup Matrix:\n\n')
             project.subgroup()
             if project.subgroupMatrix.count() > 0:
                 sys.stdout.write(project.subgroupMatrix.info())
+                sys.stdout.write('\n\nGroup Matrix:\n\n')
+                project.group()
+                if project.groupMatrix.count() > 0:
+                    sys.stdout.write(project.groupMatrix.info())
+                else:
+                    sys.stdout.write('  No Group Matrix generated\n\n')
             else:
                 sys.stdout.write('  No Subgroup Matrix generated\n\n')
 
@@ -65,9 +71,13 @@ def process(infile, outfile, subgroupfile, options):
         old_stdout = sys.stdout
         sys.stdout = outfile
         project.writeFile(options['output'], options)
-        if options['subgroup'] and subgroupfile and options['subgroupoutput'] != 'none':
-            sys.stdout = subgroupfile
-            project.writeSubgroupFile(options['subgroupoutput'], options)
+        if options['group']:
+            if subgroupfile and options['subgroupoutput'] != 'none':
+                sys.stdout = subgroupfile
+                project.writeSubgroupFile(options['subgroupoutput'], options)
+            if groupfile and options['groupoutput'] != 'none':
+                sys.stdout = groupfile
+                project.writeGroupFile(options['groupoutput'], options)
         sys.stdout = old_stdout
 
     sys.stdout.write('\n')

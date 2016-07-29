@@ -21,7 +21,7 @@
  ***************************************************************************/
 """
 
-import csv
+import csv, zlib
 from unit import Unit
 from matrix import Matrix
 
@@ -233,14 +233,17 @@ class FormatGml(Format):
         self._writeHeader()
 
         for subgroupId in project._subgroups.keys():
-            self._writeNode(subgroupId, subgroupId, options['style'], options['width'], options['height'])
+            self._writeNode(self._hash(subgroupId), subgroupId, options['style'], options['width'], options['height'])
 
         eid = 0
         for edge in project.subgroupMatrix._strat.edges_iter():
-            self._writeEdge(eid, edge[0], edge[1], options['style'])
+            self._writeEdge(eid, self._hash(edge[0]), self._hash(edge[1]), options['style'])
             eid += 1
 
         self._writeFooter()
+
+    def _hash(self, value):
+        return zlib.adler32(value) & 0xffffffff
 
     def _writeHeader(self):
         print 'graph ['

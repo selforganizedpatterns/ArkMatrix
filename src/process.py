@@ -46,6 +46,7 @@ def process(infile, outfile, subgroupfile, options):
             sys.stdout.write('  Removed Relationships: ' + str(len(edges)) + '\n')
             for edge in edges:
                 sys.stdout.write('    ' + str(edge[0]) + ' above ' + str(edge[1]) + '\n')
+            sys.stdout.write('\n')
             sys.stdout.write(project.info())
         else:
             edges = project.matrix.redundant()

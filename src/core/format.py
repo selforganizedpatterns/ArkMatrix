@@ -200,6 +200,20 @@ class FormatCsv(Format):
             for subgroup in project._groups[group]:
                 self._print(subgroup, group, 'group')
 
+    def writeSubgroup(self, project, options):
+        self._print(project.siteCode, '', 'site')
+        self._print(project.dataset, '', 'dataset')
+        for subgroup in project._subgroups.keys():
+            for child in project.subgroupMatrix.successors(subgroup):
+                self._print(subgroup, child, 'above')
+
+    def writeGroup(self, project, options):
+        self._print(project.siteCode, '', 'site')
+        self._print(project.dataset, '', 'dataset')
+        for group in project._groups.keys():
+            for child in project.groupMatrix.successors(group):
+                self._print(group, child, 'above')
+
     def _print(self, source, target, tag):
         if source and tag:
             print doublequote(source)  + ',' + doublequote(target)  + ',' + doublequote(tag)

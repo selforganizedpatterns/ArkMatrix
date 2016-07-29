@@ -235,15 +235,21 @@ class Matrix():
 
     def predecessors(self, unit):
         """Returns a list of all units immediately above a given unit in the matrix"""
-        return self._strat.predecessors(_key(unit))
+        if _key(unit) in self._strat:
+            return self._strat.predecessors(_key(unit))
+        return []
 
     def successors(self, unit):
         """Returns a list of all units immediately below a given unit in the matrix"""
-        return self._strat.successors(_key(unit))
+        if _key(unit) in self._strat:
+            return self._strat.successors(_key(unit))
+        return []
 
     def sameAs(self, unit):
         """Returns a list of all units the same as a given unit in the matrix"""
-        return self._same.neighbours(_key(unit))
+        if _key(unit) in self._strat:
+            return self._same.neighbours(_key(unit))
+        return []
 
     def contemporaryWith(self, unit):
         """Returns a list of all units contemporary with a given unit in the matrix"""
@@ -251,11 +257,15 @@ class Matrix():
 
     def ancestors(self, unit):
         """Returns a list of all units above a given unit in the matrix"""
-        return nx.ancestors(self._strat, _key(unit))
+        if _key(unit) in self._strat:
+            return nx.ancestors(self._strat, _key(unit))
+        return []
 
     def descendents(self, unit):
         """Returns a list of all units below a given unit in the matrix"""
-        return nx.descendents(self._strat, _key(unit))
+        if _key(unit) in self._strat:
+            return nx.descendents(self._strat, _key(unit))
+        return []
 
     def hasUnit(self, unit):
         """Returns True if the matrix contains the given unit."""
@@ -306,7 +316,8 @@ class Matrix():
         return nodes
 
     def weight(self, fromUnit, toUnit):
-        return self._strat[_key(fromUnit)][_key(toUnit)]['weight']
+        if _key(fromUnit) in self._strat and _key(toUnit) in self._strat:
+            return self._strat[_key(fromUnit)][_key(toUnit)]['weight']
 
     def weightForDegree(self):
         for edge in self._strat.edges_iter():

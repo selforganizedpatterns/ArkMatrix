@@ -40,12 +40,21 @@ class Project():
         self.siteCode = siteCode
 
     def info(self):
-        info = '\nDataset: ' + self.dataset + '\n'
-        info = info + 'Site Code: ' + self.siteCode + '\n'
-        info = info + 'Number of Units: ' + str(len(self._units)) + '\n'
-        info = info + 'Number of Groups: ' + str(len(self._groups)) + '\n'
-        info = info + 'Number of Subgroups: ' + str(len(self._subgroups)) + '\n\n'
-        info = info + self.matrix.info() + '\n'
+        info = '  Dataset: ' + self.dataset + '\n'
+        info = info + '  Site Code: ' + self.siteCode + '\n'
+        info = info + '  Number of Units: ' + str(len(self._units)) + '\n'
+        orphans = self.orphans()
+        info = info + '  Number of Orphan Units: ' + str(len(orphans)) + '\n'
+        if orphans:
+            info = info + '    ' + str(orphans) + '\n'
+        if len(self._subgroups) > 0:
+            missing = self.missingSubgroup()
+            info = info + '  Number of Units Missing Subgroup: ' + str(len(orphans)) + '\n'
+            if missing:
+                info = info + '    ' + str(missing) + '\n'
+        info = info + '  Number of Groups: ' + str(len(self._groups)) + '\n'
+        info = info + '  Number of Subgroups: ' + str(len(self._subgroups)) + '\n\n'
+        info = info + self.matrix.info()
         return info
 
     def unit(self, key):
@@ -95,10 +104,27 @@ class Project():
             return unit in self._units.values()
         return unit in self._units or self.makeKey(unit) in self._units
 
+    def missingSubgroup(self):
+        units = []
+        for unit in self._units.values():
+            if not unit.subgroup():
+                units.append(unit.unitId())
+        return units
+
+    def orphans(self):
+        units = []
+        for unit in self._units.values():
+            if unit.unitId() not in self.matrix:
+                units.append(unit.unitId())
+        return units
+
     def removeOrphans(self):
-        for key in self._units.keys():
-            if key not in self.matrix:
-                self._units.pop(key)
+        units = []
+        for unit in self._units.values():
+            if unit.unitId() not in self.matrix:
+                units.append(unit.key())
+        for key in units:
+            self._units.pop(key)
 
     def writeFile(self, fileFormat, options):
         formatter = Format.createFormat(fileFormat)

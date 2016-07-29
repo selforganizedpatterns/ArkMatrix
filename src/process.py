@@ -29,9 +29,13 @@ def process(infile, outfile, subgroupfile, options):
     project = Project(options['name'], options['site'])
     project.readFile(infile, options['input'])
 
-    sys.stdout.write('\nOriginal Matrix\n')
+    sys.stdout.write('\nOriginal Matrix:\n\n')
     sys.stdout.write(project.info())
 
+    if not options['orphans']:
+        project.removeOrphans()
+
+    sys.stdout.write('\n\nProcessed Matrix:\n\n')
     if not project.matrix.isValid():
         sys.stdout.write('Invalid Matrix\n')
         for cycle in project.matrix.cycles():
@@ -39,27 +43,22 @@ def process(infile, outfile, subgroupfile, options):
     else:
         if options['reduce']:
             edges = project.matrix.reduce()
-            sys.stdout.write('Reduced Matrix:\n')
-            sys.stdout.write('Removed Relationships: ' + str(len(edges)) + '\n')
+            sys.stdout.write('  Removed Relationships: ' + str(len(edges)) + '\n')
             for edge in edges:
                 sys.stdout.write('    ' + str(edge[0]) + ' above ' + str(edge[1]) + '\n')
             sys.stdout.write(project.info())
         else:
             edges = project.matrix.redundant()
-            sys.stdout.write('Redundant Relationships: ' + str(len(edges)) + '\n')
+            sys.stdout.write('  Redundant Relationships: ' + str(len(edges)) + '\n')
             for edge in edges:
                 sys.stdout.write('    ' + str(edge[0]) + ' above ' + str(edge[1]) + '\n')
-            sys.stdout.write('\n')
         if options['subgroup']:
+            sys.stdout.write('\n\nSubgroup Matrix:\n\n')
             project.subgroup()
             if project.subgroupMatrix.count() > 0:
-                sys.stdout.write('Subgroup Matrix:\n')
                 sys.stdout.write(project.subgroupMatrix.info())
             else:
-                sys.stdout.write('No Subgroup Matrix generated\n\n')
-
-    if not options['orphans']:
-        project.removeOrphans()
+                sys.stdout.write('  No Subgroup Matrix generated\n\n')
 
     if outfile and options['output'] != 'none':
         old_stdout = sys.stdout

@@ -74,13 +74,21 @@ class Matrix():
         return key in self._strat or key in self._same or key in self._contemp
 
     def info(self):
-        info = 'Strat Units: ' + str(self._strat.number_of_nodes()) + '\n'
-        info = info + 'Strat Relationships: ' + str(self._strat.number_of_edges()) + '\n'
-        info = info + 'Same As Relationships: ' + str(self._same.number_of_edges()) + '\n'
-        info = info + 'Contemporary Relationships: ' + str(self._contemp.number_of_edges()) + '\n'
-        info = info + 'Is Valid: ' + str(self.isValid()) + '\n'
+        info = '  Strat Units: ' + str(self._strat.number_of_nodes()) + '\n'
+        info = info + '  Strat Relationships: ' + str(self._strat.number_of_edges()) + '\n'
+        info = info + '  Same As Relationships: ' + str(self._same.number_of_edges()) + '\n'
+        info = info + '  Contemporary Relationships: ' + str(self._contemp.number_of_edges()) + '\n'
+        missing = self.missingPredessors()
+        info = info + '  Missing Predecessors: ' + str(len(missing)) + '\n'
+        if missing:
+            info = info + '      ' + str(missing) + '\n'
+        missing = self.missingSuccessors()
+        info = info + '  Missing Successors: ' + str(len(missing)) + '\n'
+        if missing:
+            info = info + '      ' + str(missing) + '\n'
+        info = info + '  Is Valid: ' + str(self.isValid()) + '\n'
         if self.isValid():
-            info = info + 'Longest Path: ' + str(nx.dag_longest_path_length(self._strat)) + '\n'
+            info = info + '  Longest Path: ' + str(nx.dag_longest_path_length(self._strat)) + '\n'
         return info
 
     def isValid(self):
@@ -94,7 +102,7 @@ class Matrix():
         self._contemp.clear()
 
     def count(self):
-        """Clears the matrix"""
+        """Counts the relationships"""
         return self._strat.number_of_edges() +  self._same.number_of_edges() + self._contemp.number_of_edges()
 
     def addRelationship(self, fromUnit, reln, toUnit):
@@ -280,6 +288,22 @@ class Matrix():
     def redundant(self):
         """Returns a list of any redundant edges without removing them."""
         return self.reduce(False)
+
+    def missingPredessors(self):
+        """Returns a list of any nodes missing a predecessor."""
+        nodes = []
+        for node in self._strat.nodes():
+            if self._strat.in_degree(node) == 0:
+                nodes.append(node)
+        return nodes
+
+    def missingSuccessors(self):
+        """Returns a list of any nodes missing a successor."""
+        nodes = []
+        for node in self._strat.nodes():
+            if self._strat.out_degree(node) == 0:
+                nodes.append(node)
+        return nodes
 
     def weight(self, fromUnit, toUnit):
         return self._strat[_key(fromUnit)][_key(toUnit)]['weight']

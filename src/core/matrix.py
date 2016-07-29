@@ -81,11 +81,11 @@ class Matrix():
         missing = self.missingPredessors()
         info = info + '  Missing Predecessors: ' + str(len(missing)) + '\n'
         if missing:
-            info = info + '      ' + str(missing) + '\n'
+            info = info + '      ' + str(sorted(missing)) + '\n'
         missing = self.missingSuccessors()
         info = info + '  Missing Successors: ' + str(len(missing)) + '\n'
         if missing:
-            info = info + '      ' + str(missing) + '\n'
+            info = info + '      ' + str(sorted(missing)) + '\n'
         info = info + '  Is Valid: ' + str(self.isValid()) + '\n'
         if self.isValid():
             info = info + '  Longest Path: ' + str(nx.dag_longest_path_length(self._strat)) + '\n'

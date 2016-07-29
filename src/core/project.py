@@ -50,17 +50,17 @@ class Project():
         orphans = self.orphans()
         info = info + '  Number of Orphan Units: ' + str(len(orphans)) + '\n'
         if orphans:
-            info = info + '    ' + str(orphans) + '\n'
+            info = info + '    ' + str(sorted(orphans)) + '\n'
         if len(self._subgroups) > 0:
             missing = self.missingSubgroup()
             info = info + '  Number of Units Missing Subgroup: ' + str(len(missing)) + '\n'
             if missing:
-                info = info + '    ' + str(missing) + '\n'
+                info = info + '    ' + str(sorted(missing)) + '\n'
         if len(self._groups) > 0:
             missing = self.missingGroup()
             info = info + '  Number of Subgroups Missing Group: ' + str(len(missing)) + '\n'
             if missing:
-                info = info + '    ' + str(missing) + '\n'
+                info = info + '    ' + str(sorted(missing)) + '\n'
         info += '\n'
         info = info + self.matrix.info()
         return info

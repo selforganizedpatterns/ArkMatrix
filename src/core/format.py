@@ -149,7 +149,7 @@ class FormatCsv(Format):
     def read(self, infile, project):
         reader = csv.reader(infile)
         for record in reader:
-            #try:
+            try:
                 source = str(record[0])
                 target = str(record[1])
                 if len(record) >= 3:
@@ -178,9 +178,9 @@ class FormatCsv(Format):
                     self._addUnit(project, source)
                     self._addUnit(project, target)
                     project.addRelationship(source, Matrix.Relationship.index(tag), target)
-            #except:
-            #    if record:
-            #        print 'Error reading row: ' + str(record)
+            except:
+                if record:
+                    print 'Error reading row: ' + str(record)
 
     def _addUnit(self, project, unitId):
         if not project.hasUnit(unitId):
@@ -188,10 +188,21 @@ class FormatCsv(Format):
             project.addUnit(unit)
 
     def write(self, project, options):
+        self._print(project.siteCode, '', 'site')
+        self._print(project.dataset, '', 'dataset')
         for unit in project.units():
             for child in project.matrix.successors(unit):
-                print doublequote(unit.unitId())  + ',' + doublequote(project.unit(child).unitId())
+                self._print(unit.unitId(), project.unit(child).unitId(), 'above')
+        for subgroup in project._subgroups.keys():
+            for unit in project._subgroups[subgroup]:
+                self._print(unit, subgroup, 'subgroup')
+        for group in project._groups.keys():
+            for subgroup in project._groups[group]:
+                self._print(subgroup, group, 'group')
 
+    def _print(self, source, target, tag):
+        if source and tag:
+            print doublequote(source)  + ',' + doublequote(target)  + ',' + doublequote(tag)
 
 class FormatGv(Format):
 

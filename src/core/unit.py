@@ -38,7 +38,8 @@ class Unit():
     Cut = 3
     Masonry = 4
     Skeleton = 5
-    Class = ['unknown', 'deposit', 'fill', 'cut', 'masonry', 'skeleton'];
+    Timber = 6
+    Class = ['unknown', 'deposit', 'fill', 'cut', 'masonry', 'skeleton', 'timber']
 
     _counter = itertools.count()
     _nid = 0

@@ -18,5 +18,6 @@ python arkmatrix.py -s -o gxl test/bonn.lst
 python arkmatrix.py -o csv test/bonn.lst
 python arkmatrix.py -s -o csv test/bonn.lst
 python arkmatrix.py -r -o graphml test/reduce.lst
+python arkmatrix.py -o csv test/csv_simple.csv
 python arkmatrix.py test/csv_format.csv
-python arkmatrix.py --subgroup test/csv_format.csv
+python arkmatrix.py --group test/csv_format.csv

@@ -44,7 +44,7 @@ To generate a graphical version of smaller matrices, install yEd <https://www.yw
 
 ## CSV Format
 
-The simple CSV format consists of two columns representing a stratigraphic relationship between two contexts, the first column being above, the second column being below.
+The simple CSV format consists of two columns representing a stratigraphic relationship between two contexts, the first column being above, the second column being below. If column 1 is left empty, then the previous value in column 2 is used as the above value (see <https://github.com/lparchaeology/ArkMatrix/blob/master/test/csv_simple.csv> for an example).
 
 The advanced format consists of 3 columns, with the third column describing the stratigraphic relationship between the first two columns. The valid relationships are:
 
@@ -58,3 +58,5 @@ The advanced format consists of 3 columns, with the third column describing the 
 *   dataset - column 1 holds the dataset name
 *   status - context in column 1 has the status in column 2, either assigned, unassigned, or void
 *   class - context in column 1 has the class in column 2, either unknown, deposit, fill, cut, masonry, skeleton or timber
+
+See <https://github.com/lparchaeology/ArkMatrix/blob/master/test/csv_format.csv> for an example.

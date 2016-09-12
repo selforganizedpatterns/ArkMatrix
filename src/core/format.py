@@ -148,6 +148,7 @@ class FormatCsv(Format):
 
     def read(self, infile, project):
         reader = csv.reader(infile)
+        prevTarget = None
         for record in reader:
             try:
                 source = str(record[0])
@@ -175,7 +176,11 @@ class FormatCsv(Format):
                     project.unit(source).setSubgroup(target)
                     project.addSubgrouping(target, source)
                 elif tag in Matrix.Relationship:
-                    self._addUnit(project, source)
+                    if source:
+                        self._addUnit(project, source)
+                    else:
+                        source = prevTarget
+                    prevTarget = target
                     self._addUnit(project, target)
                     project.addRelationship(source, Matrix.Relationship.index(tag), target)
             except:
